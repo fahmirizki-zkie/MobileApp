@@ -30,7 +30,7 @@ class _ModernMahasiswaAktifCardState extends State<ModernMahasiswaAktifCard>
     _controller = AnimationController(
       duration: const Duration(milliseconds: 150),
       vsync: this,
-    ); // AnimationController
+    );
     _scaleAnimation = Tween<double>(
       begin: 1.0,
       end: 0.97,
@@ -45,8 +45,7 @@ class _ModernMahasiswaAktifCardState extends State<ModernMahasiswaAktifCard>
 
   @override
   Widget build(BuildContext context) {
-    final gradientColors =
-        widget.gradientColors ??
+    final gradientColors = widget.gradientColors ??
         [
           Theme.of(context).primaryColor,
           Theme.of(context).primaryColor.withOpacity(0.7),
@@ -68,25 +67,25 @@ class _ModernMahasiswaAktifCardState extends State<ModernMahasiswaAktifCard>
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [Colors.white, gradientColors[0].withOpacity(0.05)],
-            ), // LinearGradient
+            ),
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
                 color: gradientColors[0].withOpacity(0.1),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
-              ), // BoxShadow
+              ),
             ],
             border: Border.all(
               color: gradientColors[0].withOpacity(0.1),
               width: 1,
-            ), // Border.all
-          ), // BoxDecoration
+            ),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                // Avatar with Gradient
+                // Avatar
                 Container(
                   width: 60,
                   height: 60,
@@ -95,27 +94,28 @@ class _ModernMahasiswaAktifCardState extends State<ModernMahasiswaAktifCard>
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: gradientColors,
-                    ), // LinearGradient
+                    ),
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
                         color: gradientColors[0].withOpacity(0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
-                      ), // BoxShadow
+                      ),
                     ],
-                  ), // BoxDecoration
+                  ),
                   child: Center(
                     child: Text(
-                      widget.mahasiswaAktif.nama.substring(0, 1).toUpperCase(),
+                      // ← pakai id karena title bisa panjang
+                      '${widget.mahasiswaAktif.id}',
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 24,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
-                      ), // TextStyle
-                    ), // Text
-                  ), // Center
-                ), // Container
+                      ),
+                    ),
+                  ),
+                ),
                 const SizedBox(width: 16),
 
                 // MahasiswaAktif Information
@@ -124,52 +124,56 @@ class _ModernMahasiswaAktifCardState extends State<ModernMahasiswaAktifCard>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.mahasiswaAktif.nama,
+                        // ← ganti nama → title
+                        widget.mahasiswaAktif.title,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           letterSpacing: -0.3,
-                        ), // TextStyle
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                      ), // Text
+                      ),
                       const SizedBox(height: 8),
+                      // ← ganti nim → userId
                       _buildInfoRow(
-                        Icons.badge_outlined,
-                        'NIM: ${widget.mahasiswaAktif.nim}',
+                        Icons.person_outlined,
+                        'User ID: ${widget.mahasiswaAktif.userId}',
                       ),
                       const SizedBox(height: 4),
+                      // ← ganti email → id
                       _buildInfoRow(
-                        Icons.email_outlined,
-                        widget.mahasiswaAktif.email,
+                        Icons.tag,
+                        'Post ID: ${widget.mahasiswaAktif.id}',
                       ),
                       const SizedBox(height: 4),
+                      // ← ganti jurusan → body
                       _buildInfoRow(
-                        Icons.school_outlined,
-                        widget.mahasiswaAktif.jurusan,
+                        Icons.article_outlined,
+                        widget.mahasiswaAktif.body,
                       ),
                     ],
-                  ), // Column
-                ), // Expanded
+                  ),
+                ),
                 // Arrow Icon
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: gradientColors[0].withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
-                  ), // BoxDecoration
+                  ),
                   child: Icon(
                     Icons.arrow_forward_ios_rounded,
                     size: 16,
                     color: gradientColors[0],
-                  ), // Icon
-                ), // Container
+                  ),
+                ),
               ],
-            ), // Row
-          ), // Padding
-        ), // Container
-      ), // ScaleTransition
-    ); // GestureDetector
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildInfoRow(IconData icon, String text) {
@@ -183,10 +187,10 @@ class _ModernMahasiswaAktifCardState extends State<ModernMahasiswaAktifCard>
             style: TextStyle(fontSize: 13, color: Colors.grey[700]),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-          ), // Text
-        ), // Expanded
+          ),
+        ),
       ],
-    ); // Row
+    );
   }
 }
 
@@ -213,8 +217,20 @@ class MahasiswaAktifListView extends StatelessWidget {
         padding: const EdgeInsets.all(AppConstants.paddingMedium),
         itemCount: mahasiswaAktifList.length,
         itemBuilder: (context, index) {
+          final gradientColors = AppConstants.dashboardGradients[
+              index % AppConstants.dashboardGradients.length];
           return ModernMahasiswaAktifCard(
             mahasiswaAktif: mahasiswaAktifList[index],
+            gradientColors: gradientColors,
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Detail: ${mahasiswaAktifList[index].title}'),
+                  behavior: SnackBarBehavior.floating,
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+            },
           );
         },
       ),
